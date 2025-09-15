@@ -11,22 +11,26 @@ export default function Home() {
     useGSAP(() => {
         const split = SplitText.create(".text", { type: "chars", charsClass: "char++" });
 
-        // Hide char1 initially
-        gsap.set(".char1", { opacity: 0 });
-        gsap.set(".char3", { y: 150});
-
         // Get char1 and char4 elements
         const char1 = document.querySelector(".char1");
+        const char2 = document.querySelector(".char2");
+        const char3 = document.querySelector(".char3");
         const char4 = document.querySelector(".char4");
 
-        if (char1 && char4) {
+        if (char1 && char2 && char3 && char4) {
             // Get positions
             const char1Rect = char1.getBoundingClientRect();
+            const char2Rect = char2.getBoundingClientRect();
+            const char3Rect = char3.getBoundingClientRect();
             const char4Rect = char4.getBoundingClientRect();
 
-            // Calculate the distance from char1 to char4
-            const xDistance = char1Rect.left - char4Rect.left;
-            const yDistance = char1Rect.top - char4Rect.top;
+            const char2xDistance = char3Rect.right - char2Rect.right;
+            const char4xDistance = char1Rect.left - char4Rect.left + char2xDistance;
+            const cahr4yDistance = char1Rect.top - char4Rect.top;
+
+            gsap.set(".char1", { opacity: 0 });
+            gsap.set(".char3", { y: 150 });
+            gsap.set(".char2", { x: char2xDistance });
 
             // Create timeline for sequential animations
             const tl = gsap.timeline();
@@ -35,8 +39,8 @@ export default function Home() {
             tl.fromTo(
                 ".char4",
                 {
-                    x: xDistance,
-                    y: yDistance,
+                    x: char4xDistance,
+                    y: cahr4yDistance,
                 },
                 {
                     x: 0,
@@ -47,19 +51,23 @@ export default function Home() {
                     ease: "power2",
                 }
             )
+                .to(".char2", {
+                    x: 0,
+                    ease: "back.in",
+                })
                 .to(".char3", {
                     y: 0,
                     opacity: 1,
                     duration: 1,
-                    ease: "bounce.out",
+                    ease: "back.out",
                 })
                 // After char4 animation, slide char1 into position
                 .to(".char1", {
                     x: 0,
                     opacity: 1,
-                    duration: 2,
+                    duration: 1.75,
                     ease: "elastic.Out",
-                },"+=1"); // Start slightly before char4 finishes
+                }); // Start slightly before char4 finishes
         }
     });
 
